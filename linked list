@@ -1,0 +1,315 @@
+// Slist.h
+#pragma once
+#include<stdio.h>
+#include<malloc.h>
+#include<assert.h>
+
+// 单向 不带头 不循环
+typedef int SLTDataType;
+
+typedef struct SListNode
+{
+	SLTDataType _data;
+	struct SListNode* _next;
+}SListNode;
+
+typedef struct SList
+{
+	SListNode* _head;
+}SList;
+
+void SListInit(SList* plt);// 初始化
+void SListPushBack(SList* plt, SLTDataType x);// 尾插
+void SListPushFront(SList* plt, SLTDataType x);// 头插
+void SListPopBack(SList* plt);// 尾删
+void SListPopFront(SList* plt);// 头删
+SListNode* SlistFind(SList* plt, SLTDataType x);// 寻找某个指定结点
+void SListInsertAfter(SListNode* pos, SLTDataType x);// 指定位置后面添加
+void SListEraseAfter(SListNode* pos);// 指定位置后面删除
+void SListRemove(SList* plt, SLTDataType x);// 已知值结点删除
+void SListPrint(SList* plt);// 打印
+void SListDestory(SList* plt);// 清空
+
+void TestSList();// 测试用例
+
+
+
+
+// Slist.c
+#include"Slist.h"
+
+void SListInit(SList* plt)// 初始化
+{
+	assert(plt);
+	plt->_head = NULL;
+}
+
+void SListPushBack(SList* plt, SLTDataType x)// 尾插
+{
+	assert(plt);
+
+	SListNode* newnode = (SListNode*)malloc(sizeof(SListNode));
+	newnode->_data = x;
+	newnode->_next = NULL;
+
+	// 1.空
+	// 2.非空
+	if (plt->_head == NULL)
+	{
+		plt->_head = newnode;
+	}
+	else
+	{
+		SListNode* cur = plt->_head;
+		while (cur->_next != NULL)
+		{
+			cur = cur->_next;
+		}
+		cur->_next = newnode;
+	}
+}
+
+void SListPushFront(SList* plt, SLTDataType x)// 头插
+{
+	assert(plt);
+
+	SListNode* newnode = (SListNode*)malloc(sizeof(SListNode));
+	newnode->_data = x;
+	newnode->_next = NULL;
+
+	newnode->_next = plt->_head;
+	plt->_head = newnode;
+}
+
+void SListPopBack(SList* plt)// 尾删
+{
+	assert(plt);
+
+	if (plt->_head == NULL)
+	{
+		printf("链表为空！\n");
+		return;
+	}
+	else
+	{
+		SListNode* cur = plt->_head;
+		while (cur->_next->_next != NULL)
+		{
+			cur = cur->_next;
+		}
+		free(cur->_next);
+		cur->_next = NULL;
+	}
+}
+
+void SListPopFront(SList* plt)// 头删
+{
+	assert(plt);
+
+	if (plt->_head == NULL)
+	{
+		printf("链表为空！\n");
+		return;
+	}
+	else
+	{
+		SListNode* cur = plt->_head;
+		plt->_head = cur->_next;
+		free(cur);
+		cur = NULL;// 防止野指针
+	}
+}
+
+SListNode* SlistFind(SList* plt, SLTDataType x)// 寻找某个指定结点
+{
+	assert(plt);
+
+	if (plt->_head == NULL)
+	{
+		printf("链表为空！\n");
+		return;
+	}
+	else
+	{
+		SListNode* cur = plt->_head;
+		while (cur != NULL)
+		{
+			if (cur->_data == x)
+			{
+				return cur;
+			}
+			else
+			{
+				cur = cur->_next;
+			}
+		}
+		return NULL;
+	}
+}
+
+void SListInsertAfter(SListNode* pos, SLTDataType x)// 指定位置后面添加
+{
+	assert(pos);
+
+	SListNode* newnode = (SListNode*)malloc(sizeof(SListNode));
+	newnode->_data = x;
+	newnode->_next = NULL;
+
+	newnode->_next = pos->_next;
+	pos->_next = newnode;
+}
+
+void SListEraseAfter(SListNode* pos)// 指定位置后面删除
+{
+	assert(pos);
+
+	if (pos->_next == NULL)
+	{
+		return;
+	}
+	else
+	{
+		SListNode* apos = pos->_next;
+		pos->_next = apos->_next;
+		free(apos);
+		apos = NULL;
+		//pos->_next = pos->_next->_next;
+		//free(pos->_next);
+	}
+}
+
+void SListRemove(SList* plt, SLTDataType x)// 已知值结点删除
+{
+	assert(plt);
+
+	if (plt->_head == NULL)
+	{
+		printf("链表为空！\n");
+		return;
+	}
+	else
+	{
+		SListNode* fcur = NULL;
+		SListNode* cur = plt->_head;
+		while (cur != NULL)
+		{
+			if (cur->_data != x)
+			{
+				fcur = cur;
+				cur = cur->_next;
+			}
+			else
+			{
+				if (fcur == NULL)
+					plt->_head = cur->_next;
+				else
+					fcur->_next = cur->_next;
+
+				free(cur);
+				cur = NULL;
+				return;
+			}
+		}
+	}
+}
+
+void SListDestory(SList* plt)// 清空
+{
+	assert(plt);
+
+	if (plt->_head == NULL)
+	{
+		printf("链表为空！\n");
+		return;
+	}
+	else
+	{
+		SListNode* cur = plt->_head;
+		while (cur != NULL)
+		{
+			plt->_head = cur->_next;
+			cur = cur->_next;
+		}
+		free(cur);
+		cur = NULL;// 防止野指针
+	}
+}
+
+void SListPrint(SList* plt)// 打印
+{
+	assert(plt);
+
+	SListNode* cur = plt->_head;
+	while (cur != NULL)
+	{
+		printf("%d->", cur->_data);
+		cur = cur->_next;
+	}
+	printf("NULL\n");
+}
+//void SListPrint(SList* plt)// 打印
+//{
+//	assert(plt);
+//
+//	SListNode* cur = plt->_head;
+//	while (cur->_next != NULL)
+//	{
+//		printf("%d->", cur->_data);
+//		cur = cur->_next;
+//	}
+//	printf("%d\n", cur->_data);
+//}
+
+void TestSList()// 测试用例
+{
+	SList lt;
+	SListNode* p = NULL;
+
+	SListInit(&lt);// 初始化
+	SListPushBack(&lt, 6);// 尾插
+	SListPushBack(&lt, 7);// 尾插
+	SListPushBack(&lt, 8);// 尾插
+	SListPushFront(&lt, 5);// 头插
+	SListPushFront(&lt, 4);// 头插
+	SListPushFront(&lt, 3);// 头插
+	SListPushFront(&lt, 2);// 头插
+	SListPushFront(&lt, 1);// 头插
+	SListPrint(&lt);// 打印
+
+	printf("尾删：");
+	SListPopBack(&lt);// 尾删
+	SListPrint(&lt);// 打印
+
+	printf("头删：");
+	SListPopFront(&lt);// 头删
+	SListPrint(&lt);// 打印
+
+	printf("寻找2：");
+	p = SlistFind(&lt, 2);// 寻找某个指定结点
+	printf("%d\n", *p);
+
+	SListNode* pos1 = SlistFind(&lt, 2);
+	printf("2后面插入22：");
+	SListInsertAfter(pos1, 22);// 指定位置后面添加
+	SListPrint(&lt);// 打印
+
+	SListNode* pos2 = SlistFind(&lt, 22);
+	printf("22后面删除：");
+	SListEraseAfter(pos2);// 指定位置后面删除
+	SListPrint(&lt);// 打印
+
+	printf("删除4：");
+	SListRemove(&lt, 4);// 已知值结点删除
+	SListPrint(&lt);// 打印
+
+	printf("清空：");
+	SListDestory(&lt);// 清空
+	SListPrint(&lt);// 打印
+}
+
+int main()
+{
+	TestSList();
+	system("pause");
+	return 0;
+}
