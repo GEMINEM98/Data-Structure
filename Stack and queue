@@ -1,0 +1,318 @@
+// stack.h
+
+#pragma once
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<malloc.h>
+#include<assert.h>
+#include<stdbool.h>
+
+typedef int STDataType;
+typedef struct Stack
+{
+	STDataType* _a;//栈
+	size_t _top;//栈顶
+	size_t _capacity;//容量
+}Stack;
+
+void StackInit(Stack* ps);// 初始化
+void StackDestory(Stack* ps);// 销毁
+void StackPush(Stack* ps, STDataType x);// 入栈
+void StackPop(Stack* ps);// 出栈
+STDataType StackTop(Stack* ps);// 取栈顶元素
+bool StackEmpty(Stack* ps);// 判栈空
+size_t StackSize(Stack* ps);// 栈大小
+void StackPrint(Stack* ps);// 打印出栈所有元素
+
+void StackInit(Stack* ps)// 初始化
+{
+	assert(ps);
+	ps->_a = NULL;
+	ps->_capacity = 0;
+	ps->_top = 0;
+}
+
+void StackDestory(Stack* ps)// 销毁
+{
+	assert(ps);
+	if (ps->_a != NULL)
+	{
+		free(ps->_a);
+		ps->_a = NULL;
+		ps->_top = 0;
+		ps->_capacity = 0;
+	}
+}
+
+void StackPush(Stack* ps, STDataType x)// 入栈
+{
+	assert(ps);
+	if (ps->_capacity == ps->_top)
+	{
+		size_t newcapacity = ps->_capacity == 0 ? 2 : ps->_capacity * 2;
+		ps->_a = (STDataType*)realloc(ps->_a, sizeof(STDataType)*newcapacity);
+		ps->_capacity = newcapacity;
+	}
+	ps->_a[ps->_top] = x;
+	ps->_top++;
+}
+
+void StackPop(Stack* ps)// 出栈
+{
+	assert(ps&&ps->_top > 0);
+	--ps->_top;// 直接挪动下标即可
+}
+
+STDataType StackTop(Stack* ps)// 取栈顶元素
+{
+	assert(ps&&ps->_top > 0);
+	return (ps->_a[ps->_top - 1]);
+	//return ps->_top - 1; // 这是错误的，因为ps->_top是下标，不是该下标代表的元素！！！！！！！！！！！
+
+}
+
+bool StackEmpty(Stack* ps)// 判栈空
+{
+	assert(ps);
+	return ps->_top == 0;// 看下标是否为0
+}
+
+size_t StackSize(Stack* ps)// 栈大小
+{
+	assert(ps);
+	return ps->_top;// 下标表示几个元素
+}
+
+void StackPrint(Stack* ps)// 打印出栈所有元素
+{
+	assert(ps&&ps->_top > 0);
+	while (ps->_top)
+	{
+		printf("%d ", ps->_top);
+		ps->_top--;
+	}
+}
+
+
+
+
+// queue.h
+
+#pragma once
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<malloc.h>
+#include<assert.h>
+#include<stdbool.h>
+
+
+typedef int QUDataType;
+typedef struct QueueNode
+{
+	struct QueueNode* _next;
+	QUDataType _data;
+}QueueNode;
+
+typedef struct Queue
+{
+	QueueNode* _front;// 队头
+	QueueNode* _tail;// 队尾
+}Queue;
+
+void QueueInit(Queue* pq);//初始化
+void QueueDestory(Queue* pq);//销毁
+QueueNode* BuyQueueNode(QUDataType x);//建立新结点
+void QueuePush(Queue* pq, QUDataType x);//入队列
+void QueuePop(Queue* pq);//按顺序删除
+QUDataType QueueFront(Queue* pq);//返回头结点的值
+QUDataType QueueBack(Queue* pq);//返回尾结点的值
+bool QueueEmpty(Queue* pq);//判队列是否为空
+int QueueSize(Queue* pq);//队列大小
+void QueuePrint(Queue* pq);//打印队列
+
+void QueueInit(Queue* pq)//初始化
+{
+	assert(pq);
+	pq->_front = NULL;
+	pq->_tail = NULL;
+}
+
+void QueueDestory(Queue* pq)//销毁
+{
+	//assert(pq);
+	QueueNode* cur = pq->_front;
+	while (cur)
+	{
+		QueueNode* next = cur->_next;
+		free(cur); 
+		cur = next;
+	}
+	pq->_front = NULL;
+	pq->_tail = NULL;
+}
+
+QueueNode* BuyQueueNode(QUDataType x)//建立新结点
+{
+	QueueNode* newnode = (QueueNode*)malloc(sizeof(QueueNode));
+	newnode->_data = x;
+	newnode->_next = NULL;
+	return newnode;
+}
+
+void QueuePush(Queue* pq, QUDataType x)//入队列
+{
+	assert(pq);
+	QueueNode* newnode = BuyQueueNode(x);
+	if (pq->_tail == NULL)
+	{
+		pq->_front = pq->_tail = newnode;
+	}
+	else
+	{
+		pq->_tail->_next = newnode;
+		pq->_tail = newnode;
+	}
+}
+
+void QueuePop(Queue* pq)//按顺序删除
+{
+	assert(pq&&pq->_front != NULL);
+	QueueNode* next = pq->_front->_next;
+	free(pq->_front);
+	pq->_front = next;
+	if (pq->_front == NULL)
+	{
+		pq->_tail = NULL;
+	}
+}
+
+QUDataType QueueFront(Queue* pq)//返回头结点的值
+{
+	assert(pq&&pq->_front != NULL);
+	return pq->_front->_data;
+}
+
+QUDataType QueueBack(Queue* pq)//返回尾结点的值
+{
+	assert(pq&&pq->_tail != NULL);
+	return pq->_tail->_data;
+}
+
+bool QueueEmpty(Queue* pq)//判队列是否为空
+{
+	assert(pq);
+	return pq->_front == NULL;
+}
+
+int QueueSize(Queue* pq)//队列大小
+{
+	assert(pq);
+	size_t count = 0;
+	QueueNode* cur = pq->_front;
+	while (cur != NULL)
+	{
+		count++;
+		cur = cur->_next;
+	}
+	return count;
+}
+
+void QueuePrint(Queue* pq)//打印队列
+{
+	assert(pq);
+	if (pq->_front == pq->_tail)
+	{
+		printf("<==NULL\n");
+		return 0;
+	}
+	QueueNode* cur = pq->_front;
+	while (cur != pq->_tail)
+	{
+		printf("<==%d", cur->_data);
+		cur = cur->_next;
+	}
+	printf("<==%d<==\n", cur->_data);
+}
+
+
+
+// test.c
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include"queue.h"
+#include"stack.h"
+
+void test_stack()
+{
+	Stack ps;
+	StackInit(&ps);// 初始化
+
+	StackPush(&ps, 1);// 入栈
+	StackPush(&ps, 2);// 入栈
+	StackPush(&ps, 3);// 入栈
+	StackPush(&ps, 4);// 入栈
+	StackPush(&ps, 5);// 入栈
+
+	StackPop(&ps);// 出栈
+	StackPop(&ps);// 出栈
+
+	printf("出栈后，栈顶元素是：%d",StackTop(&ps));// 取栈顶元素
+
+	printf("\n栈是否为空：%d", StackEmpty(&ps));// 判栈空
+
+	printf("\n栈大小是：%d", StackSize(&ps));// 栈大小
+										  
+	printf("\n所有元素出栈：");
+
+	StackPrint(&ps);// 打印出栈所有元素
+
+	StackDestory(&ps);// 销毁
+	printf("\n栈帧已销毁！\n");
+}
+
+void test_queue()
+{
+	Queue pq;
+	QueueInit(&pq);//初始化
+	printf("初始化：");
+	QueuePrint(&pq);//打印队列
+
+	QueuePush(&pq, 1);//入队列
+	QueuePush(&pq, 2);//入队列
+	QueuePush(&pq, 3);//入队列
+	QueuePush(&pq, 4);//入队列
+	QueuePush(&pq, 5);//入队列
+	printf("入队列：");
+	QueuePrint(&pq);//打印队列
+
+	QueuePop(&pq);//按顺序删除
+	printf("打印队列：");
+	QueuePrint(&pq);//删除后打印队列
+
+	printf("头结点的值为：%d\n", QueueFront(&pq));//返回头结点的值
+
+	printf("尾结点的值为：%d\n", QueueBack(&pq));//返回尾结点的值
+
+	printf("队列是否为空：%d\n", QueueEmpty(&pq));//判队列是否为空
+
+	printf("队列大小为：%d\n", QueueSize(&pq));//队列大小
+
+	QueueDestory(&pq);//销毁
+	printf("销毁：");
+	QueuePrint(&pq);//打印队列
+}
+
+int main()
+{
+	printf("栈：\n");
+	test_stack();
+	printf("\n\n队列：\n");
+	test_queue();
+	system("pause");
+	return 0;
+}
+
+
