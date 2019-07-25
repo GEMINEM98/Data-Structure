@@ -1,0 +1,268 @@
+
+//*************************************************************************
+// 仅仅用在堆排序的.h文件****************************************************
+//*************************************************************************
+
+// Heap.h
+
+#pragma once
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+#include<malloc.h>
+#include<string.h>
+#include"排序.h"
+
+typedef int HPDataType;
+typedef struct Heap
+{
+	HPDataType* _a;
+	HPDataType _size;
+	HPDataType _capacity;
+}Heap;
+
+void HeapInit(Heap* hp, HPDataType* a, int n);// 初始化
+void AdjustDown(HPDataType* a, size_t n, size_t parent);// 向下调整
+void HeapSort(HPDataType* a, size_t n);// 堆排序 
+void PrintHeap(HPDataType* a, size_t n);// 打印堆
+
+
+void HeapInit(Heap* hp, HPDataType* a, int n)// 初始化
+{
+	hp->_a = (HPDataType*)malloc(sizeof(HPDataType)*n);
+	memcpy(hp->_a, a, sizeof(HPDataType));
+	hp->_capacity = n;
+	hp->_size = n;
+
+	// 构建成堆
+	for (int i = (n - 1 - 1) / 2; i >= 0; --i)
+	{
+		AdjustDown(hp->_a, hp->_size, i);
+	}
+}
+
+void AdjustDown(HPDataType* a, size_t n, size_t parent)// 向下调整
+{
+	int child = parent * 2 + 1;
+	while (child < n)
+	{
+		// 选出小的那个孩子
+		if (child + 1 < n && a[child + 1] < a[child])
+			++child;
+
+		// 孩子小于父亲，则交换
+		if (a[child] < a[parent])
+		{
+			Swap(&a[child], &a[parent]);
+			parent = child;
+			child = parent * 2 + 1;
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+void HeapSort(HPDataType* a, size_t n)// 堆排序 
+{
+	for (int i = (n - 2) / 2; i >= 0; --i)
+	{
+		AdjustDown(a, n, i);
+	}
+	int end = n - 1;
+	while (end > 0)
+	{
+		Swap(&a[end], &a[0]);
+		AdjustDown(a, end, 0);
+		--end;
+	}
+}
+
+void PrintHeap(HPDataType* a, size_t n)// 打印堆
+{
+	for (int i = n - 1; i >= 0; --i)
+	{
+		printf("%d ", a[i]);
+	}
+	printf("\n");
+}
+
+
+
+
+
+
+
+//*****************************************************************
+// 其他排序的.h文件*************************************************
+//*****************************************************************
+
+
+// sort.h
+
+#pragma once
+
+#include<stdio.h>
+#include<stdlib.h>
+
+
+
+
+void PrintSort(int* a, int n)// 打印
+{
+	for (int i = 0; i < n; ++i)
+	{
+		printf("%d ", a[i]);
+	}
+	printf("\n");
+}
+
+void DirectInsertionSort(int* a, int n)// 直接插入排序
+{
+	for (int i = 0; i < n - 1; ++i)
+	{
+		int end = i;// 下标
+		int index = a[end + 1];// 记录待定的值
+		while (end >= 0)
+		{
+			if (index < a[end])
+			{
+				a[end + 1] = a[end];
+				--end;
+			}
+			else break;
+		}
+		a[end + 1] = index;
+	}
+}
+
+void ShellSort(int* a, int n)// 希尔排序
+{
+	int gap = n;
+	while (gap > 1)
+	{
+		gap = gap / 3 + 1;
+
+		for (int i = 0; i < n - gap; ++i)
+		{
+			int end = i;
+			int index = a[end + gap];
+
+			while (end >= 0)
+			{
+				if (index < a[end])
+				{
+					a[end + gap] = a[end];
+					end = end - gap;
+				}
+				else break;
+			}
+			a[end + gap] = index;
+		}
+	}
+}
+
+void Swap(int* a, int* b)
+{
+	int x = *a;
+	*a = *b;
+	*b = x;
+}
+void DirectSelectionSort(int* a, int n)// 直接选择排序
+{
+	int end = n - 1;
+	int begin = 0;
+	int min;
+	int max;
+	while (begin <= end)
+	{
+		max = begin;
+		min = begin;
+		for (int i = begin + 1; i <= end; ++i)// 找中间数据中的最大、最小值
+		{
+			if (a[i] < a[min])
+			{
+				min = i;
+			}
+			if (a[i] > a[max])
+			{
+				max = i;
+			}
+		}
+		Swap(&a[min], &a[begin]);
+		if (max == begin)
+		{
+			max = min;
+		}
+		Swap(&a[max], &a[end]);
+
+		++begin;
+		--end;
+	}
+}
+
+void BubbleSort(int* a, int n)// 冒泡排序
+{
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = i; j < n - 1; ++j)
+		{
+			if (a[j] > a[j + 1])
+			{
+				Swap(&a[j], &a[j + 1]);
+			}
+		}
+	}
+}
+
+
+
+//**************************************************************
+// 主函数测试****************************************************
+//**************************************************************
+
+// test.c
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include"sort.h"
+#include"Heap.h"
+
+void test()
+{
+	int a[] = { 1,5,2,3,9,7,6,4,8 };
+	int n = sizeof(a) / sizeof(a[0]);
+
+	printf("原数列：");
+	PrintSort(a, n);
+
+	//printf("直接插入排序：");
+	//DirectInsertionSort(a, n);
+	//PrintSort(a, n);
+
+	//printf("希尔排序：");
+	//ShellSort(a, n);
+	//PrintSort(a, n);
+
+	//printf("直接选择排序：");
+	//DirectSelectionSort(a, n);
+	//PrintSort(a, n);
+
+	//printf("堆排序：");
+	//HeapSort(a, n);
+	//PrintHeap(a, n);
+
+	printf("冒泡排序：");
+	BubbleSort(a, n);
+	PrintSort(a, n);
+
+}
+
+int main()
+{
+	test();
+	system("pause");
+	return 0;
+}
