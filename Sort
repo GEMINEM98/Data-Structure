@@ -7,40 +7,40 @@
 
 #pragma once
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<assert.h>
-#include<malloc.h>
-#include<string.h>
-#include"排序.h"
-
-typedef int HPDataType;
-typedef struct Heap
-{
-	HPDataType* _a;
-	HPDataType _size;
-	HPDataType _capacity;
-}Heap;
-
-void HeapInit(Heap* hp, HPDataType* a, int n);// 初始化
-void AdjustDown(HPDataType* a, size_t n, size_t parent);// 向下调整
-void HeapSort(HPDataType* a, size_t n);// 堆排序 
-void PrintHeap(HPDataType* a, size_t n);// 打印堆
-
-
-void HeapInit(Heap* hp, HPDataType* a, int n)// 初始化
-{
-	hp->_a = (HPDataType*)malloc(sizeof(HPDataType)*n);
-	memcpy(hp->_a, a, sizeof(HPDataType));
-	hp->_capacity = n;
-	hp->_size = n;
-
-	// 构建成堆
-	for (int i = (n - 1 - 1) / 2; i >= 0; --i)
-	{
-		AdjustDown(hp->_a, hp->_size, i);
-	}
-}
+//#include<stdio.h>
+//#include<stdlib.h>
+//#include<assert.h>
+//#include<malloc.h>
+//#include<string.h>
+//#include"排序.h"
+//
+//typedef int HPDataType;
+//typedef struct Heap
+//{
+//	HPDataType* _a;
+//	HPDataType _size;
+//	HPDataType _capacity;
+//}Heap;
+//
+//void HeapInit(Heap* hp, HPDataType* a, int n);// 初始化
+//void AdjustDown(HPDataType* a, size_t n, size_t parent);// 向下调整
+//void HeapSort(HPDataType* a, size_t n);// 堆排序 
+//void PrintHeap(HPDataType* a, size_t n);// 打印堆
+//
+//
+//void HeapInit(Heap* hp, HPDataType* a, int n)// 初始化
+//{
+//	hp->_a = (HPDataType*)malloc(sizeof(HPDataType)*n);
+//	memcpy(hp->_a, a, sizeof(HPDataType));
+//	hp->_capacity = n;
+//	hp->_size = n;
+//
+//	// 构建成堆
+//	for (int i = (n - 1 - 1) / 2; i >= 0; --i)
+//	{
+//		AdjustDown(hp->_a, hp->_size, i);
+//	}
+//}
 
 void AdjustDown(HPDataType* a, size_t n, size_t parent)// 向下调整
 {
