@@ -6,7 +6,7 @@
 // Heap.h
 
 #pragma once
-
+//
 //#include<stdio.h>
 //#include<stdlib.h>
 //#include<assert.h>
@@ -42,7 +42,8 @@
 //	}
 //}
 
-void AdjustDown(HPDataType* a, size_t n, size_t parent)// 向下调整
+
+void AdjustDown(int* a, size_t n, size_t parent)// 向下调整
 {
 	int child = parent * 2 + 1;
 	while (child < n)
@@ -65,7 +66,7 @@ void AdjustDown(HPDataType* a, size_t n, size_t parent)// 向下调整
 	}
 }
 
-void HeapSort(HPDataType* a, size_t n)// 堆排序 
+void HeapSort(int* a, size_t n)// 堆排序 
 {
 	for (int i = (n - 2) / 2; i >= 0; --i)
 	{
@@ -80,7 +81,7 @@ void HeapSort(HPDataType* a, size_t n)// 堆排序
 	}
 }
 
-void PrintHeap(HPDataType* a, size_t n)// 打印堆
+void PrintHeap(int* a, size_t n)// 打印堆
 {
 	for (int i = n - 1; i >= 0; --i)
 	{
@@ -95,9 +96,125 @@ void PrintHeap(HPDataType* a, size_t n)// 打印堆
 
 
 
+//*************************************************************************
+// 仅仅用在 快速排序的非递归算法 的 栈.h 文件*********************************
+//*************************************************************************
+
+
+#pragma once
+
+#include <assert.h>
+#include <stdio.h>
+#include <malloc.h>
+#include <stdbool.h>
+
+typedef int STDataType;
+struct Stack
+{
+	STDataType* _array;
+	size_t _top;
+	size_t _capacity;
+};
+
+typedef struct Stack Stack;
+
+void StackInit(Stack* ps);
+void StackDestory(Stack* ps);
+void StackPush(Stack* ps, STDataType x);
+void StackPop(Stack* ps);
+STDataType StackTop(Stack* ps);
+size_t StackSize(Stack* ps);
+bool StackEmpty(Stack* ps);
+
+void StackInit(Stack* ps)
+{
+	assert(ps);
+	ps->_array = NULL;
+	ps->_top = 0;
+	ps->_capacity = 0;
+}
+
+void StackDestory(Stack* ps)
+{
+	assert(ps);
+	if (ps->_array != NULL)
+	{
+		free(ps->_array);
+		ps->_array = NULL;
+		ps->_capacity = ps->_top = 0;
+	}
+}
+
+void StackPush(Stack* ps, STDataType x)
+{
+	assert(ps);
+	if (ps->_top == ps->_capacity)
+	{
+		size_t newcapacity = ps->_capacity == 0 ? 2 : ps->_capacity * 2;
+		ps->_array = (STDataType*)realloc(ps->_array, newcapacity * sizeof(STDataType));
+		ps->_capacity = newcapacity;
+	}
+
+	ps->_array[ps->_top] = x;
+	ps->_top++;
+}
+
+void StackPop(Stack* ps)
+{
+	assert(ps && ps->_top > 0);
+	--ps->_top;
+}
+
+STDataType StackTop(Stack* ps)
+{
+	assert(ps && ps->_top > 0);
+
+	return ps->_array[ps->_top - 1];
+}
+
+size_t StackSize(Stack* ps)
+{
+	assert(ps);
+
+	return ps->_top;
+}
+
+bool StackEmpty(Stack* ps)
+{
+	assert(ps);
+
+	return ps->_top == 0;
+}
+
+void TestStack()
+{
+	Stack s;
+	StackInit(&s);
+	StackPush(&s, 1);
+	StackPush(&s, 2);
+	StackPush(&s, 3);
+	StackPush(&s, 4);
+
+	while (!StackEmpty(&s))
+	{
+		printf("%d ", StackTop(&s));
+		StackPop(&s);
+	}
+
+	printf("\n");
+	StackDestory(&s);
+}
+
+
+
+
+
+
+
 //*****************************************************************
 // 其他排序的.h文件*************************************************
 //*****************************************************************
+
 
 
 // sort.h
@@ -106,8 +223,8 @@ void PrintHeap(HPDataType* a, size_t n)// 打印堆
 
 #include<stdio.h>
 #include<stdlib.h>
-
-
+#include<string.h>
+#include"Stack.h"
 
 
 void PrintSort(int* a, int n)// 打印
@@ -118,6 +235,10 @@ void PrintSort(int* a, int n)// 打印
 	}
 	printf("\n");
 }
+
+
+//*******************************************************************************************************************
+
 
 void DirectInsertionSort(int* a, int n)// 直接插入排序
 {
@@ -137,6 +258,10 @@ void DirectInsertionSort(int* a, int n)// 直接插入排序
 		a[end + 1] = index;
 	}
 }
+
+
+//*******************************************************************************************************************
+
 
 void ShellSort(int* a, int n)// 希尔排序
 {
@@ -163,6 +288,10 @@ void ShellSort(int* a, int n)// 希尔排序
 		}
 	}
 }
+
+
+//*******************************************************************************************************************
+
 
 void Swap(int* a, int* b)
 {
@@ -203,18 +332,353 @@ void DirectSelectionSort(int* a, int n)// 直接选择排序
 	}
 }
 
+
+//*******************************************************************************************************************
+
+
 void BubbleSort(int* a, int n)// 冒泡排序
 {
-	for (int i = 0; i < n; ++i)
+	for (int i = 0; i < n - 1; ++i)
 	{
-		for (int j = i; j < n - 1; ++j)
+		for (int j = i + 1; j < n; ++j)
 		{
-			if (a[j] > a[j + 1])
+			if (a[j] < a[i])
 			{
-				Swap(&a[j], &a[j + 1]);
+				Swap(&a[j], &a[i]);
 			}
 		}
 	}
+}
+
+
+
+
+//************************************************快速排序**************************************************************
+
+
+
+
+int _QuickPartSort1(int* a, int left, int right)// 快速排序（左右指针法）  
+{
+	int key = a[right];
+	int keyindex = right;
+
+	while (left < right)
+	{
+		while (left < right && a[left] <= key)
+		{
+			++left;
+		}
+		while (left < right && a[right] >= key)
+		{
+			--right;
+		}
+		if (left < right)
+		{
+			Swap(&a[left], &a[right]);
+		}
+	}
+	Swap(&a[left], &a[keyindex]);
+	return left;
+}
+void QuickSort1(int* a, int left, int right)// 快速排序（左右指针法） 
+{
+	if (left >= right)
+		return;
+	int keyindex = _QuickPartSort1(a, left, right);
+
+	QuickSort1(a, left, keyindex - 1);
+	QuickSort1(a, keyindex + 1, right);
+}
+
+
+//------------------------------------------------------------------------------------------------------------------
+
+
+int _QuickPartSort2(int* a, int left, int right)// 快速排序（挖坑法）
+{
+	int key = a[right];
+	while (left < right)
+	{
+		while (left < right&&a[left] <= key)
+		{
+			++left;
+		}
+		a[right] = a[left];
+
+		while (left < right&&a[right] >= key)
+		{
+			--right;
+		}
+		a[left] = a[right];
+	}
+	a[left] = key;
+	return left;
+}
+void QuickSort2(int* a, int left, int right)// 快速排序（挖坑法）
+{
+	if (left >= right)
+		return;
+	int keyindex = _QuickPartSort2(a, left, right);
+
+	QuickSort2(a, left, keyindex - 1);
+	QuickSort2(a, keyindex + 1, right);
+}
+
+
+//------------------------------------------------------------------------------------------------------------------
+
+
+int GetMidIndex(int* a, int left, int right) // 优化方法：三数取中 
+{
+	int mid = left + (right - left) / 2;
+	if (a[left] < a[mid])
+	{
+		if (a[mid] < a[right])
+			return mid;
+		else if (a[left] < a[right])
+			return right;
+		else return left;
+	}
+	else  // a[left]>a[mid]
+	{
+		if (a[right] < a[mid])
+			return mid;
+		else if (a[left] < a[right])
+			return left;
+		else return right;
+	}
+}
+int _QuickPartSort22(int* a, int left, int right)// 快速排序（挖坑法）
+{
+	int key = a[right];
+	while (left < right)
+	{
+		while (left < right&&a[left] <= key)
+		{
+			++left;
+		}
+		a[right] = a[left];
+
+		while (left < right&&a[right] >= key)
+		{
+			--right;
+		}
+		a[left] = a[right];
+	}
+	a[left] = key;
+	return left;
+}
+void QuickSort22(int* a, int left, int right)// 快速排序（挖坑法）
+{
+	if (left >= right)
+		return;
+	int keyindex = _QuickPartSort22(a, left, right);
+
+	QuickSort22(a, left, keyindex - 1);
+	QuickSort22(a, keyindex + 1, right);
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+
+int _QuickPartSort3(int* a, int left, int right)   // 快速排序（前后指针法）
+{
+	int key = a[right];
+	int prev = left - 1;
+	int cur = left;
+
+	while (cur < right)
+	{
+		if (a[cur] < key&&++prev != cur)
+		{
+			Swap(&a[cur], &a[prev]);
+		}
+		++cur;
+	}
+	++prev;
+	Swap(&a[right], &a[prev]);
+	return prev;
+}
+void QuickSort3(int* a, int left, int right)// 快速排序（前后指针法）
+{
+	if (left >= right)
+		return;
+	int keyindex = _QuickPartSort3(a, left, right);
+
+	QuickSort3(a, left, keyindex - 1);
+	QuickSort3(a, keyindex + 1, right);
+}
+
+
+//------------------------------------------------------------------------------------------------------------------
+
+
+void QuickSort4(int* a, int left, int right)  // 快速排序（非递归算法） 
+{
+	Stack s;
+	StackInit(&s);
+	StackPush(&s, left);
+	StackPush(&s, right);
+
+	while (!StackEmpty(&s))
+	{
+		int end = StackTop(&s);
+		StackPop(&s);
+		int begin = StackTop(&s);
+		StackPop(&s);
+		int keyindex = _QuickPartSort2(a, begin, end);
+
+		// [begin,keyindex-1] key [keyindex+1,end]
+		if (begin < keyindex - 1)
+		{
+			StackPush(&s, begin);
+			StackPush(&s, keyindex - 1);
+		}
+		if (keyindex + 1 < end)
+		{
+			StackPush(&s, keyindex + 1);
+			StackPush(&s, end);
+		}
+	}
+}
+
+
+//*******************************************************************************************************************
+
+
+
+void _MergeSort1(int* a, int left, int right, int* tmp)// 归并排序（子函数）  
+{
+	if (left == right)
+		return;
+	int mid = left + (right - left) / 2;
+	// [left,mid] [mid+1,right]
+	_MergeSort1(a, left, mid, tmp);
+	_MergeSort1(a, mid + 1, right, tmp);
+
+	// a[left,mid]和a[mid+1,right]归并到tmp[left,right]上
+	int begin1 = left;
+	int end1 = mid;
+	int begin2 = mid + 1;
+	int end2 = right;
+
+	int i = left;
+	while (begin1 <= end1 && begin2 <= end2)
+	{
+		if (a[begin1] < a[begin2])
+		{
+			tmp[i++] = a[begin1];
+			++begin1;
+		}
+		else
+		{
+			tmp[i++] = a[begin2];
+			++begin2;
+		}
+	}
+	while (begin1 <= end1)
+	{
+		tmp[i++] = a[begin1];
+		++begin1;
+	}
+	while (begin2 <= end2)
+	{
+		tmp[i++] = a[begin2];
+		++begin2;
+	}
+	memcpy(a + left, tmp + left, sizeof(int)*(right - left + 1));
+}
+void MergeSort1(int* a, int n) // 归并排序                    
+{
+	int* tmp = (int*)malloc(sizeof(int)*n);
+	_MergeSort1(a, 0, n - 1, tmp);
+	free(tmp);
+}
+
+
+//------------------------------------------------------------------------------------------------------------------
+
+
+void MergeSort2(int* a, int n)      // 归并排序（非递归算法）
+{
+	int* tmp = (int*)malloc(sizeof(int)* n);
+
+	// [begin1,end1][begin2,end2]
+	int gap = 1;
+	while (gap < n)
+	{
+		for (int begin = 0; begin < n; begin += 2 * gap)
+		{
+			// [begin, begin+gap-1][begin+gap, begin+2*gap-1]
+			// [0, 0][1, 1]  gap = 1
+			// [0, 1][2, 3]	 gap = 2
+
+			int begin1 = begin, end1 = begin + gap - 1;
+			if (end1 >= n)
+				end1 = n - 1;
+
+			int begin2 = begin + gap, end2 = begin + 2 * gap - 1;
+			if (end2 >= n)
+				end2 = n - 1;
+
+			int index = begin1;
+			while (begin1 <= end1 && begin2 <= end2)
+			{
+				if (a[begin1] < a[begin2])
+					tmp[index++] = a[begin1++];
+				else
+					tmp[index++] = a[begin2++];
+			}
+
+			while (begin1 <= end1)
+				tmp[index++] = a[begin1++];
+
+			while (begin2 <= end2)
+				tmp[index++] = a[begin2++];
+
+		}
+		memcpy(a, tmp, sizeof(int)*n);
+
+		gap *= 2;
+	}
+	free(tmp);
+}
+
+
+//*******************************************************************************************************************
+
+
+void CountSort(int* a, int n)          // 计数排序（鸽巢排序）
+{
+	int max = a[0];
+	int min = a[0];
+	for (int i = 0; i < n; ++i)
+	{
+		if (a[i] > max)
+			max = a[i];
+
+		if (a[i] < min)
+			min = a[i];
+	}		
+	// 动态申请tmp数组
+	int range = max - min + 1;
+	int* counta = (int*)malloc(sizeof(int)*(max - min + 1));
+	memset(counta, 0, sizeof(int)*range);
+
+	for (int i = 0; i < n; ++i)
+	{
+		counta[a[i] - min]++;
+	}
+	// 此时，tmp数组中已经存在各数据出现的次数
+	int j = 0; 
+	for (int i = 0; i < range; ++i)
+	{
+		while (counta[i]--)
+		{
+			a[j++] = i + min;
+		}
+	} 
 }
 
 
@@ -227,16 +691,23 @@ void BubbleSort(int* a, int n)// 冒泡排序
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
-#include"sort.h"
+#include"排序.h"
 #include"Heap.h"
+#include"Stack.h"
 
 void test()
 {
 	int a[] = { 1,5,2,3,9,7,6,4,8 };
 	int n = sizeof(a) / sizeof(a[0]);
 
-	printf("原数列：");
+	printf("原数列a：");
 	PrintSort(a, n);
+
+	int b[] = { 49,38,65,97,76,13,27,49 };
+	int m = sizeof(b) / sizeof(b[0]);
+
+	printf("原数列b：");
+	PrintSort(b, m);
 
 	//printf("直接插入排序：");
 	//DirectInsertionSort(a, n);
@@ -252,12 +723,48 @@ void test()
 
 	//printf("堆排序：");
 	//HeapSort(a, n);
-	//PrintHeap(a, n);
+	//PrintSort(a, n);// 降序
+	//PrintHeap(a, n);// 升序
 
-	printf("冒泡排序：");
-	BubbleSort(a, n);
-	PrintSort(a, n);
+	//printf("冒泡排序：");
+	//BubbleSort(a, n);
+	//PrintSort(a, n);
 
+	//printf("快速排序(左右指针法)：");      
+	//QuickSort1(a, 0, n - 1);
+	//PrintSort(a, n);
+	//QuickSort1(b, 0, m - 1);
+	//PrintSort(b, m);
+
+	//printf("快速排序(挖坑法)：");
+	//QuickSort2(a, 0, n - 1);
+	//PrintSort(a, n);
+
+	//printf("快速排序(挖坑法，优化)：");
+	//QuickSort22(a, 0, n - 1);
+	//PrintSort(a, n);
+	//QuickSort22(b, 0, m - 1);
+	//PrintSort(b, m);
+
+	//printf("快速排序(前后指针法)：");
+	//QuickSort3(a, 0, n - 1);
+	//PrintSort(a, n);
+
+	//printf("快速排序(非递归法)：");   
+	//QuickSort4(a, 0, n - 1);
+	//PrintSort(a, n);
+
+	//printf("归并排序："); 
+	//MergeSort1(a, n);
+	//PrintSort(a, n);
+
+	//printf("归并排序(非递归法)：");   
+	//MergeSort2(a, n);
+	//PrintSort(a, n);
+
+	//printf("计数排序（鸽巢排序）：");
+	//CountSort(a, n);
+	//PrintSort(a, n);
 }
 
 int main()
