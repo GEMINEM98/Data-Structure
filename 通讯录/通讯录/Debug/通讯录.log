@@ -1,0 +1,7 @@
+﻿  contact.c
+c:\users\12257\code\比特练习作业\通讯录\通讯录\contact.c(89): warning C4477: “scanf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“const char *”
+c:\users\12257\code\比特练习作业\通讯录\通讯录\contact.c(121): warning C4477: “scanf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“const char *”
+c:\users\12257\code\比特练习作业\通讯录\通讯录\contact.c(125): warning C4098: “ContactBookFind”:“void”函数返回值
+  test.c
+  正在生成代码...
+  通讯录.vcxproj -> C:\Users\12257\code\比特练习作业\通讯录\Debug\通讯录.exe

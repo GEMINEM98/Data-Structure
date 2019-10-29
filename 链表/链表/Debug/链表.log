@@ -1,0 +1,6 @@
+﻿  Slist.c
+c:\users\12257\code\比特练习作业\链表\链表\slist.c(115): warning C4033: “SlistFind”必须返回值
+c:\users\12257\code\比特练习作业\链表\链表\slist.c(328): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“SListNode”
+c:\users\12257\code\比特练习作业\链表\链表\slist.c(358): warning C4013: “system”未定义；假设外部返回 int
+c:\users\12257\code\比特练习作业\链表\链表\slist.c(133): warning C4715: “SlistFind”: 不是所有的控件路径都返回值
+  链表.vcxproj -> C:\Users\12257\code\比特练习作业\链表\Debug\链表.exe
