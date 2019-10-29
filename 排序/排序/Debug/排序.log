@@ -1,0 +1,7 @@
+﻿  test.c
+c:\users\12257\code\作业\排序\排序\heap.h(43): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\12257\code\作业\排序\排序\heap.h(46): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\12257\code\作业\排序\排序\heap.h(63): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\12257\code\作业\排序\排序\heap.h(66): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\12257\code\作业\排序\排序\heap.h(105): warning C4018: “<=”: 有符号/无符号不匹配
+  排序.vcxproj -> C:\Users\12257\code\作业\排序\Debug\排序.exe

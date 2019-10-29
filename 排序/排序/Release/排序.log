@@ -1,0 +1,10 @@
+﻿  test.c
+c:\users\12257\code\比特练习作业\排序\排序\heap.h(43): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\12257\code\比特练习作业\排序\排序\heap.h(46): warning C4018: “<”: 有符号/无符号不匹配
+  正在生成代码
+c:\users\12257\code\比特练习作业\排序\排序\stack.h(140): warning C4716: “_QuickPartSort4”: 必须返回一个值
+  5 of 13 functions (38.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
+  排序.vcxproj -> C:\Users\12257\code\比特练习作业\排序\Release\排序.exe
